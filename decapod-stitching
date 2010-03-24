@@ -12,9 +12,14 @@ from PIL import Image
 parser = optparse.OptionParser(usage="""
 %prog [options] image1 image2 -o output
 
-Stitch two images together.
+Stitch two images together and output a combined image.
+
+Stitching types are: trivial, liberator, stereo (only trivial is supported right now).
+
+Images can be rotated prior to processing; the -R flag should be given a string
+like "lr", where n=no rotation, l=rotate left, r=rotate right, and f=rotate 180 degrees.
 """)
-parser.add_option("-t","--type",help="stitching type (trivial, liberator, stereo)",default="trivial")
+parser.add_option("-t","--type",help="stitching type",default="trivial")
 parser.add_option("-o","--output",help="output directory",default="book")
 parser.add_option("-B","--binarize",help="binarization component",default="BinarizeByHT")
 parser.add_option("-d","--display",help="display result",action="store_true")
