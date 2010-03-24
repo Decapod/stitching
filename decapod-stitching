@@ -20,8 +20,8 @@ Images can be rotated prior to processing; the -R flag should be given a string
 like "lr", where n=no rotation, l=rotate left, r=rotate right, and f=rotate 180 degrees.
 """)
 parser.add_option("-t","--type",help="stitching type",default="trivial")
-parser.add_option("-o","--output",help="output directory",default="book")
-parser.add_option("-B","--binarize",help="binarization component",default="BinarizeByHT")
+parser.add_option("-o","--output",help="output directory",default=None)
+parser.add_option("-B","--binarize",help="binarization component",default=None)
 parser.add_option("-d","--display",help="display result",action="store_true")
 parser.add_option("-L","--low",help="low threshold",type=float,default=0.2)
 parser.add_option("-H","--high",help="high threshold",type=float,default=0.4)
@@ -33,9 +33,19 @@ parser.add_option("-r","--dpi",help="approximate resolution",type=float,default=
 parser.add_option("-q","--silent",help="no binarization checks",default=1)
 options,args = parser.parse_args()
 
-assert options.type=="trivial","only trivial stitching is implemented right now";
+assert options.type=="trivial", \
+    "only trivial stitching is implemented right now"
+assert options.output is not None, \
+    "you must specify an output file with -o"
+_,ext = os.path.splitext(options.output)
+assert ext!=".jpg" and ext!=".jpeg",\
+    "please use .png as the extension/format for output files"
 
-binarizer = ocropy.make_IBinarize(options.binarize)
+if options.binarize is not None:
+    binarizer = ocropy.make_IBinarize(options.binarize)
+else:
+    binarizer = None
+
 if options.binarize=="BinarizeByHT":
     binarizer.pset("max_n",200000.0)
     binarizer.pset("k0",str(options.low))
@@ -94,8 +104,11 @@ for i in range(2):
         sys.exit(1)
 
     bshow(image)
-    binarizer.binarize(bin,image)
-    bshow(bin)
+    if binarizer is not None:
+        binarizer.binarize(bin,image)
+        bshow(bin)
+    else:
+        bin.copy(image)
     if crop is not None:
         crop.cleanup(cropped,bin)
         bshow(cropped)
