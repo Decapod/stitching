@@ -33,6 +33,10 @@ parser.add_option("-r","--dpi",help="approximate resolution",type=float,default=
 parser.add_option("-q","--silent",help="no binarization checks",default=1)
 options,args = parser.parse_args()
 
+if len(args)!=2 or options.output is None:
+    parser.print_help()
+    sys.exit(1)
+
 assert options.type=="trivial", \
     "only trivial stitching is implemented right now"
 assert options.output is not None, \
@@ -69,10 +73,6 @@ def bshow(bin):
 
 if options.Display: options.display = 1
 if options.display: ion(); show()
-
-if len(args)!=2 or options.output is None:
-    parser.print_help()
-    sys.exit(1)
 
 image = ocropy.bytearray()
 temp = ocropy.bytearray()
