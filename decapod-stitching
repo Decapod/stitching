@@ -12,7 +12,9 @@ from PIL import Image
 parser = optparse.OptionParser(usage="""
 %prog [options] image1 image2 -o output
 
+Stitch two images together.
 """)
+parser.add_option("-t","--type",help="stitching type (trivial, liberator, stereo)",default="trivial")
 parser.add_option("-o","--output",help="output directory",default="book")
 parser.add_option("-B","--binarize",help="binarization component",default="BinarizeByHT")
 parser.add_option("-d","--display",help="display result",action="store_true")
@@ -25,6 +27,8 @@ parser.add_option("-C","--crop",help="crop class (e.g., PageFrameRAST)",default=
 parser.add_option("-r","--dpi",help="approximate resolution",type=float,default=200)
 parser.add_option("-q","--silent",help="no binarization checks",default=1)
 options,args = parser.parse_args()
+
+assert options.type=="trivial","only trivial stitching is implemented right now";
 
 binarizer = ocropy.make_IBinarize(options.binarize)
 if options.binarize=="BinarizeByHT":
@@ -39,13 +43,14 @@ else:
     crop = None
 
 def bshow(bin):
-    clf()
-    imshow(NI(bin),cmap=cm.gray)
-    draw()
-    if not options.Display: 
-        raw_input("hit ENTER to continue")
-    else:
-        ginput(1,timeout=1)
+    if options.display:
+        clf()
+        imshow(NI(bin),cmap=cm.gray)
+        draw()
+        if not options.Display: 
+            raw_input("hit ENTER to continue")
+        else:
+            ginput(1,timeout=1)
 
 if options.Display: options.display = 1
 if options.display: ion(); show()
